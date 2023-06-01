@@ -12,25 +12,25 @@ const DropFileInput = ({ onFileChange }: IFile) => {
   const [ fileList, setFileList ] = React.useState<File[]>([]);
   const wrapperRef = React.useRef<HTMLDivElement | null>(null);
 
-const onDragEnter = (): void => {
-  if (wrapperRef.current) {
-    wrapperRef.current.classList.add('dragover');
-  }
-};
+  const onDragEnter = (): void => {
+    if (wrapperRef.current) {
+        wrapperRef.current.classList.add('dragover');
+    }
+  };
 
-const onDragLeave = (): void => {
+  const onDragLeave = (): void => {
     if (wrapperRef.current) {
         wrapperRef.current.classList.remove('dragover')
     }
-};
+  };
 
-const onDrop = (): void => {
+  const onDrop = (): void => {
     if (wrapperRef.current) {
         wrapperRef.current.classList.remove('dragover')
     }
-}
+  };
 
-const onFileDrop = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const onFileDrop = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newFile: File | undefined = e.target.files?.[0];
     if (newFile) {
       const updatedList: File[] = [...fileList, newFile];
@@ -48,8 +48,21 @@ const onFileDrop = (e: React.ChangeEvent<HTMLInputElement>): void => {
       onFileChange(updatedList);
     }
   };
-  
 
+  const formatFileSize = (fileSize: number): string => {
+    const threshold = 1024; // 1KB = 1024 bytes;
+
+    if (fileSize < threshold) {
+      return `${fileSize}B`;
+    } else if (fileSize < threshold * threshold) {
+      const fileSizeInKB = Math.floor(fileSize / threshold);
+      return `${fileSizeInKB}KB`;
+    } else {
+      const fileSizeInMB = (fileSize / (threshold * threshold)).toFixed(2);
+      return `${fileSizeInMB}MB`;
+    }
+  };
+  
   return (
     <>
       <div
@@ -73,7 +86,7 @@ const onFileDrop = (e: React.ChangeEvent<HTMLInputElement>): void => {
               <img src={imgConfig[item.type.split('/')[1]] || imgConfig['default']} alt="" />
               <div className={styles.drop_file_preview__item__info}>
                 <p>{item.name}</p>
-                <p>{item.size}B</p>
+                <p>{formatFileSize(item.size)}</p>
               </div>
               <span className={styles.drop_file_preview__item__del} onClick={() => fileRemove(item)}>
                 x
